@@ -23,9 +23,12 @@ class SpaceInvader {
         SDL_Event event;
         SDL_Surface *playerSurface;
         SDL_Texture *playerTexture;
+        SDL_Surface *bulletSurface;
+        SDL_Texture *bulletTexture;
         Player *player;
         bool leftKeyPressed;
         bool rightKeyPressed;
+        bool zWasPressed;
         bool exitProgram;
 };
 

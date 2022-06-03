@@ -3,20 +3,23 @@
 SpaceInvader::SpaceInvader(){
     rightKeyPressed = false;
     leftKeyPressed = false;
+    zWasPressed = false;
     SDL_Init(SDL_INIT_EVERYTHING);
     window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     player = new Player(SCREEN_WIDTH, SCREEN_HEIGHT);
     playerSurface = IMG_Load("./media/player.png");
-    if (!playerSurface) {
-        std::cout << IMG_GetError;
-    }
     playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
+    bulletSurface = IMG_Load("./media/bullet.png");
+    bulletTexture = SDL_CreateTextureFromSurface(renderer, bulletSurface);
     exitProgram = false;
 }
 
 SpaceInvader::~SpaceInvader() {
     SDL_FreeSurface(playerSurface);
+    SDL_DestroyTexture(playerTexture);
+    SDL_FreeSurface(bulletSurface);
+    SDL_DestroyTexture(bulletTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -47,6 +50,12 @@ void SpaceInvader::input() {
                 
                 case SDL_SCANCODE_RIGHT:
                     rightKeyPressed = true;
+                    break;
+
+                case SDL_SCANCODE_Z:
+                    if (player->getState() == normal) {
+                        zWasPressed = true;
+                    }
                     break;
                 
                 default:
@@ -89,6 +98,15 @@ void SpaceInvader::update() {
     if(rightKeyPressed) {
         player->movement(1);
     }
+
+    if(player->getState() == shooting) {
+        player->bulletMovement();
+    }
+
+    if(zWasPressed) {
+        player->setState(shooting);
+        zWasPressed = false;
+    }
 }
 
 void SpaceInvader::render() {
@@ -99,6 +117,14 @@ void SpaceInvader::render() {
     playerPos.y = SCREEN_HEIGHT - player->getH();
     playerPos.h = player->getH();
     playerPos.w = player->getW();
+    if (player->getState() == shooting) {
+        SDL_Rect bulletPos;
+        bulletPos.x = player->getBulletX();
+        bulletPos.y = player->getBulletY();
+        bulletPos.h = player->getBulletH();
+        bulletPos.w = player->getBulletW();
+        SDL_RenderCopy(renderer, bulletTexture, NULL, &bulletPos);
+    }
     SDL_RenderCopy(renderer, playerTexture, NULL, &playerPos);
     SDL_RenderPresent(renderer);
 }

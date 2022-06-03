@@ -6,7 +6,13 @@ Player::Player(int screenW, int screenH){
     h = 20;
     w = 40;
     x = screenW / 2 - w / 2;
+    bulletH = 10;
+    bulletW = 5;
+    bulletX = x + w / 2;
+    bulletY = screenH - h - bulletH;
+    bulletDy = 5;
     dx = 5;
+    state = normal;
 }
 
 void Player::movement(int direction) {
@@ -15,6 +21,18 @@ void Player::movement(int direction) {
         x = 0;
     } else if (x > screenW - w) {
         x = screenW - w;
+    }
+    if (state == normal) {
+        bulletX = x + w / 2;
+    }
+}
+
+void Player::bulletMovement(){
+    bulletY -= bulletDy;
+    if (bulletY + bulletH < 0) {
+        bulletY = screenH - h - bulletH;
+        bulletX = x + w / 2 - 2;
+        state = normal;
     }
 }
 
@@ -28,4 +46,28 @@ int Player::getH() {
 
 int Player::getW() {
     return w;
+}
+
+stateType Player::getState() {
+    return state;
+}
+
+void Player::setState(stateType state) {
+    Player::state = state;
+}
+
+int Player::getBulletX() {
+    return bulletX;
+}
+
+int Player::getBulletY() {
+    return bulletY;
+}
+
+int Player::getBulletH() {
+    return bulletH;
+}
+
+int Player::getBulletW() {
+    return bulletW;
 }
