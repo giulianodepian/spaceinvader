@@ -4,7 +4,7 @@ Uint32 timerCallback(Uint32 interval, void *param) {
     SDL_Event event;
     SDL_UserEvent userevent;
     userevent.type = SDL_USEREVENT;
-    userevent.code = 0;
+    userevent.code = 2;
     userevent.data1 = NULL;
     userevent.data2 = NULL;
     event.type = SDL_USEREVENT;
@@ -133,7 +133,7 @@ void SpaceInvader::input() {
             }       
         case SDL_USEREVENT:
             switch(event.user.code) {
-                case 0:
+                case 2:
                     for (int i = 0; i < 11; i++) {
                         if (enemies[i][0]->detectCollision()) {
                             detectecCollision = true;
