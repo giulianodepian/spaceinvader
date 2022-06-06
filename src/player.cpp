@@ -48,11 +48,11 @@ int Player::getW() {
     return w;
 }
 
-stateType Player::getState() {
+entityState Player::getState() {
     return state;
 }
 
-void Player::setState(stateType state) {
+void Player::setState(entityState state) {
     Player::state = state;
 }
 

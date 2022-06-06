@@ -1,11 +1,6 @@
 #ifndef _H_PLAYER
 #define _H_PLAYER
-
-enum stateType {
-    normal,
-    shooting,
-    detroyed
-};
+#include "global.h"
 
 class Player {
     public:
@@ -19,8 +14,8 @@ class Player {
         int getBulletY();
         int getBulletH();
         int getBulletW();
-        stateType getState();
-        void setState(stateType state);
+        entityState getState();
+        void setState(entityState state);
     private:
         int x;
         int dx;
@@ -31,7 +26,7 @@ class Player {
         int bulletH;
         int bulletW;
         int bulletDy;
-        stateType state;
+        entityState state;
         int screenW;
         int screenH;
 };
