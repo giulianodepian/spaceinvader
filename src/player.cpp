@@ -30,10 +30,14 @@ void Player::movement(int direction) {
 void Player::bulletMovement(){
     bulletY -= bulletDy;
     if (bulletY + bulletH < 0) {
-        bulletY = screenH - h - bulletH;
-        bulletX = x + w / 2 - 2;
+        resetBullet();
         state = normal;
     }
+}
+
+void Player::resetBullet(){
+    bulletY = screenH - h - bulletH;
+    bulletX = x + w / 2 - 2;
 }
 
 int Player::getX() {

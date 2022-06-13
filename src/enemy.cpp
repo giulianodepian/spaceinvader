@@ -7,22 +7,26 @@ Enemy::Enemy(int initialX, int initialY, enemyType type, int screenW, int screen
     Enemy::type = type;
     switch (type) {
         case small:
-            w = 8;
+            w = 23;
+            score = 30;
             break;
         case medium:
-            w = 11;
+            w = 26;
+            score = 20;
             break;
         case large:
-            w = 12;
+            w = 27;
+            score = 10;
             break;
         default:
-            w = 12;
+            w = 27;
+            score = 10;
             break;
     };
-    paddingX = 55;
-    paddingY = 10;
-    x = initialX * (12 + 55);
-    y = initialY * (HEIGHT + 10);
+    paddingX = 30;
+    paddingY = 5;
+    x = initialX * (27 + paddingX);
+    y = initialY * (HEIGHT + paddingY);
     currentAnim = 1;
     state = normal;
     bulletX = initialX + w / 2;
@@ -62,6 +66,10 @@ enemyType Enemy::getType() {
     return type;
 }
 
+void Enemy::setState(entityState state) {
+    Enemy::state = state;
+}
+
 void Enemy::horizontalMovement() {
     x += DX * direction;
     if (currentAnim == 1) currentAnim = 2;
@@ -72,9 +80,11 @@ void Enemy::verticalMovement() {
     y += DY;
     if (direction == 1) direction = -1;
     else direction = 1;
+    if (currentAnim == 1) currentAnim = 2;
+    else currentAnim = 1;
 }
 
 bool Enemy::detectCollision() {
-    if (x + DX * direction > screenW - 12 || x + DX * direction < 0 + 12) return true;
+    if (x + DX * direction > screenW - 17 || x + DX * direction < 0 + 17) return true;
     return false;
 }

@@ -17,6 +17,7 @@ SpaceInvader::SpaceInvader(){
     rightKeyPressed = false;
     leftKeyPressed = false;
     zWasPressed = false;
+    score = 0;
     SDL_Init(SDL_INIT_EVERYTHING);
     window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
@@ -170,6 +171,29 @@ void SpaceInvader::update() {
     }
     if(rightKeyPressed) {
         player->movement(1);
+    }
+
+    if (player->getState() == shooting) {
+        bool breakLoop = false;
+        for (int i = 0; i < enemies.size(); i++) {
+            for (int k = 0; k < enemies[i].size(); k++) {
+                if (enemies[i][k]->getState() != destroyed) {
+                    if (
+                        player->getBulletY() <= enemies[i][k]->getY() + Enemy::HEIGHT && (
+                            (player->getBulletX() >= enemies[i][k]->getX() && player->getBulletX() <= enemies[i][k]->getX() + enemies[i][k]->getW()) ||
+                            (player->getBulletX() + player->getBulletW() >= enemies[i][k]->getX() && player->getBulletX() + player->getBulletW() <= enemies[i][k]->getX() + enemies[i][k]->getW())
+                        )
+                    ) {
+                        enemies[i][k]->setState(destroyed);
+                        player->setState(normal);
+                        player->resetBullet();
+                        breakLoop = true;
+                        break;
+                    }
+                }
+            }
+            if (breakLoop) break;
+        }
     }
 
     if(player->getState() == shooting) {

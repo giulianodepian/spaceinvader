@@ -12,7 +12,7 @@ class Enemy {
     public:
         static const int BULLETH = 10;
         static const int BULLETW = 5;
-        static const int HEIGHT = 8;
+        static const int HEIGHT = 23;
         static const int DX = 20;
         static const int DY = 20;
         Enemy(int initialX, int initialY, enemyType type, int screenW, int screenH);
@@ -26,6 +26,7 @@ class Enemy {
         int getW();
         int getCurrentAnim();
         entityState getState();
+        void setState(entityState state);
         enemyType getType();
     private:
         enemyType type;
@@ -41,6 +42,7 @@ class Enemy {
         int direction;
         int screenW;
         int screenH;
+        int score;
         bool collided;
 };
 

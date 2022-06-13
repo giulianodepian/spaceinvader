@@ -16,6 +16,7 @@ class Player {
         int getBulletW();
         entityState getState();
         void setState(entityState state);
+        void resetBullet();
     private:
         int x;
         int dx;

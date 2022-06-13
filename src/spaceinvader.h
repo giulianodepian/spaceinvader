@@ -44,6 +44,7 @@ class SpaceInvader {
         SDL_Texture *enemyLarge2Texture;
         Player *player;
         std::array<std::array<Enemy*, 5>, 11> enemies;
+        int score;
         bool leftKeyPressed;
         bool rightKeyPressed;
         bool zWasPressed;
