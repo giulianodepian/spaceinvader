@@ -42,6 +42,8 @@ class SpaceInvader {
         SDL_Texture *enemyMedium2Texture;
         SDL_Surface *enemyLarge2Surface;
         SDL_Texture *enemyLarge2Texture;
+        SDL_Surface *deathEnemySurface;
+        SDL_Texture *deathEnemyTexture;
         Player *player;
         std::array<std::array<Enemy*, 5>, 11> enemies;
         int score;

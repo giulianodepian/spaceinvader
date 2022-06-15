@@ -28,6 +28,8 @@ class Enemy {
         entityState getState();
         void setState(entityState state);
         enemyType getType();
+        bool getPlayDeathAnimation();
+        void setPlayDeathAnimation(bool playDeathAnimation);
     private:
         enemyType type;
         entityState state;
@@ -44,6 +46,7 @@ class Enemy {
         int screenH;
         int score;
         bool collided;
+        bool playDeathAnimation;
 };
 
 #endif

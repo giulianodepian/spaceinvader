@@ -32,6 +32,7 @@ Enemy::Enemy(int initialX, int initialY, enemyType type, int screenW, int screen
     bulletX = initialX + w / 2;
     bulletY = initialY + HEIGHT;
     collided = false;
+    playDeathAnimation = true;
 }
 
 int Enemy::getX() {
@@ -68,6 +69,14 @@ enemyType Enemy::getType() {
 
 void Enemy::setState(entityState state) {
     Enemy::state = state;
+}
+
+bool Enemy::getPlayDeathAnimation() {
+    return playDeathAnimation;
+}
+
+void Enemy::setPlayDeathAnimation(bool playDeathAnimation) {
+    Enemy::playDeathAnimation = playDeathAnimation;
 }
 
 void Enemy::horizontalMovement() {

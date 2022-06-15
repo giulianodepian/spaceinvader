@@ -13,6 +13,12 @@ Uint32 timerCallback(Uint32 interval, void *param) {
     return(interval);
 }
 
+Uint32 enemyDeathCallback(Uint32 interval, void *param) {
+    Enemy *enemy = (Enemy *)param;
+    enemy->setPlayDeathAnimation(false);
+    return 0;
+}
+
 SpaceInvader::SpaceInvader(){
     rightKeyPressed = false;
     leftKeyPressed = false;
@@ -53,6 +59,9 @@ SpaceInvader::SpaceInvader(){
     SDL_FreeSurface(enemyMedium2Surface);
     SDL_FreeSurface(enemyLarge1Surface);
     SDL_FreeSurface(enemyLarge2Surface);
+    deathEnemySurface = IMG_Load("./media/enemyDeath.png");
+    deathEnemyTexture = SDL_CreateTextureFromSurface(renderer, deathEnemySurface);
+    SDL_FreeSurface(deathEnemySurface);
     timer = SDL_AddTimer(1000, timerCallback, NULL);
     detectecCollision = false;
     exitProgram = false;
@@ -67,6 +76,7 @@ SpaceInvader::~SpaceInvader() {
     SDL_DestroyTexture(enemyMedium2Texture);
     SDL_DestroyTexture(enemyLarge1Texture);
     SDL_DestroyTexture(enemyLarge2Texture);
+    SDL_DestroyTexture(deathEnemyTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -140,7 +150,9 @@ void SpaceInvader::input() {
                             detectecCollision = true;
                             for (int j = 0; j < 11; j++) {
                                 for (int l = 0; l < 5; l++) {
-                                    enemies[j][l]->verticalMovement();
+                                    if (enemies[j][l]->getState() != destroyed) {
+                                        enemies[j][l]->verticalMovement();
+                                    }
                                 }
                             }
                             break;
@@ -151,7 +163,9 @@ void SpaceInvader::input() {
                     if (!detectecCollision) {
                         for (int i = 0; i < 11; i++) {
                             for (int k = 0; k < 5; k++) {
-                                enemies[i][k]->horizontalMovement();
+                                if (enemies[i][k]->getState() != destroyed) {
+                                    enemies[i][k]->horizontalMovement();
+                                }
                             }
                         }
                     }
@@ -188,6 +202,7 @@ void SpaceInvader::update() {
                         player->setState(normal);
                         player->resetBullet();
                         breakLoop = true;
+                        SDL_AddTimer(500, enemyDeathCallback, enemies[i][k]);
                         break;
                     }
                 }
@@ -246,6 +261,13 @@ void SpaceInvader::render() {
                     default:
                         break;
                 }
+            } else if (enemies[i][k]->getPlayDeathAnimation()){
+                SDL_Rect enemyPos;
+                enemyPos.x = enemies[i][k]->getX();
+                enemyPos.y = enemies[i][k]->getY();
+                enemyPos.h = Enemy::HEIGHT;
+                enemyPos.w = enemies[i][k]->getW();
+                SDL_RenderCopy(renderer, deathEnemyTexture, NULL, &enemyPos);
             }
         }
     }
