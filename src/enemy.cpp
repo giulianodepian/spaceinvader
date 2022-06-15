@@ -28,6 +28,8 @@ Enemy::Enemy(int initialX, int initialY, enemyType type, int screenW, int screen
     initialPaddingY = 50;
     x = initialX * (27 + paddingX);
     y = initialY * (HEIGHT + paddingY) + initialPaddingY;
+    originalX = x;
+    originalY = y;
     currentAnim = 1;
     state = normal;
     bulletX = initialX + w / 2;
@@ -101,4 +103,9 @@ void Enemy::verticalMovement() {
 bool Enemy::detectCollision() {
     if (x + DX * direction > screenW - 17 || x + DX * direction < 0 + 17) return true;
     return false;
+}
+
+void Enemy::resetPosition() {
+    x = originalX;
+    y = originalY;
 }

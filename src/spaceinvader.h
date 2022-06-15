@@ -13,6 +13,11 @@
 class Player;
 class Enemy;
 
+enum gameState {
+    playing,
+    ending,
+};
+
 class SpaceInvader {
     public:
         static const int SCREEN_WIDTH = 800;
@@ -24,6 +29,7 @@ class SpaceInvader {
         void update();
         void render();
     private:
+        gameState state;
         SDL_Window *window;
         SDL_Renderer *renderer;
         SDL_Event event;
@@ -32,6 +38,8 @@ class SpaceInvader {
         SDL_TimerID timer;
         SDL_Surface *playerSurface;
         SDL_Texture *playerTexture;
+        SDL_Surface *playerDeathSurface;
+        SDL_Texture *PlayerDeathTexture;
         SDL_Surface *bulletSurface;
         SDL_Texture *bulletTexture;
         SDL_Surface *enemySmall1Surface;

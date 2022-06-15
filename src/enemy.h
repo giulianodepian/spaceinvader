@@ -31,11 +31,14 @@ class Enemy {
         enemyType getType();
         bool getPlayDeathAnimation();
         void setPlayDeathAnimation(bool playDeathAnimation);
+        void resetPosition();
     private:
         enemyType type;
         entityState state;
         int x;
         int y;
+        int originalY;
+        int originalX;
         int w;
         int paddingX;
         int paddingY;

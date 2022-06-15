@@ -31,6 +31,9 @@ SpaceInvader::SpaceInvader(){
     playerSurface = IMG_Load("./media/sprites/player.png");
     playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
     SDL_FreeSurface(playerSurface);
+    playerDeathSurface = IMG_Load("./media/sprites/playerDeath.png");
+    PlayerDeathTexture = SDL_CreateTextureFromSurface(renderer, playerDeathSurface);
+    SDL_FreeSurface(playerDeathSurface);
     bulletSurface = IMG_Load("./media/sprites/bullet.png");
     bulletTexture = SDL_CreateTextureFromSurface(renderer, bulletSurface);
     SDL_FreeSurface(bulletSurface);
@@ -189,17 +192,17 @@ void SpaceInvader::input() {
 }
 
 void SpaceInvader::update() {
-    if (leftKeyPressed) {
+    if (leftKeyPressed && player->getState() != destroyed) {
         player->movement(-1);
     }
-    if(rightKeyPressed) {
+    if(rightKeyPressed && player->getState() != destroyed) {
         player->movement(1);
     }
 
     if (player->getState() == shooting) {
         bool breakLoop = false;
-        for (int i = 0; i < enemies.size(); i++) {
-            for (int k = 0; k < enemies[i].size(); k++) {
+        for (int i = 0; i < 11; i++) {
+            for (int k = 0; k < 5; k++) {
                 if (enemies[i][k]->getState() != destroyed) {
                     if (
                         player->getBulletY() <= enemies[i][k]->getY() + Enemy::HEIGHT && (
@@ -229,6 +232,28 @@ void SpaceInvader::update() {
         player->setState(shooting);
         zWasPressed = false;
     }
+
+    if (player->getState() == destroyed) {
+        for (int i = 0; i < 11; i++) {
+            for (int k = 0; k < 5; k++) {
+                enemies[i][k]->resetPosition();
+            }
+        }
+        player->setState(normal);
+        state = playing;
+        SDL_Delay(2000);
+    }
+
+    for (int i = 0; i < 11; i++) {
+        for (int k = 0; k < 5; k++) {
+            if ((SCREEN_HEIGHT - player->getH()) <= (enemies[i][k]->getY() + Enemy::HEIGHT)) {
+                player->setState(destroyed);
+                state = ending;
+                break;
+            }
+        }
+    }
+
 }
 
 void SpaceInvader::render() {
@@ -288,6 +313,7 @@ void SpaceInvader::render() {
             }
         }
     }
-    SDL_RenderCopy(renderer, playerTexture, NULL, &playerPos);
+    if (player->getState() != destroyed) SDL_RenderCopy(renderer, playerTexture, NULL, &playerPos);
+    else SDL_RenderCopy(renderer, PlayerDeathTexture, NULL, &playerPos);
     SDL_RenderPresent(renderer);
 }
