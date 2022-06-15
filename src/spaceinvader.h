@@ -2,8 +2,10 @@
 #define _H_SPACEINVADER
 #include <iostream>
 #include <array>
+#include <string> 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include "player.h"
 #include "enemy.h"
 #include "global.h"
@@ -25,6 +27,8 @@ class SpaceInvader {
         SDL_Window *window;
         SDL_Renderer *renderer;
         SDL_Event event;
+        TTF_Font *font;
+        SDL_Rect textPos;
         SDL_TimerID timer;
         SDL_Surface *playerSurface;
         SDL_Texture *playerTexture;
@@ -44,6 +48,8 @@ class SpaceInvader {
         SDL_Texture *enemyLarge2Texture;
         SDL_Surface *deathEnemySurface;
         SDL_Texture *deathEnemyTexture;
+        SDL_Surface *textSurface;
+        SDL_Texture *textTexture;
         Player *player;
         std::array<std::array<Enemy*, 5>, 11> enemies;
         int score;

@@ -28,10 +28,10 @@ SpaceInvader::SpaceInvader(){
     window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     player = new Player(SCREEN_WIDTH, SCREEN_HEIGHT);
-    playerSurface = IMG_Load("./media/player.png");
+    playerSurface = IMG_Load("./media/sprites/player.png");
     playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
     SDL_FreeSurface(playerSurface);
-    bulletSurface = IMG_Load("./media/bullet.png");
+    bulletSurface = IMG_Load("./media/sprites/bullet.png");
     bulletTexture = SDL_CreateTextureFromSurface(renderer, bulletSurface);
     SDL_FreeSurface(bulletSurface);
     for (int i = 0; i < 11; i++ ) {
@@ -41,12 +41,12 @@ SpaceInvader::SpaceInvader(){
             else enemies[i][k] = new Enemy(i, k, large, SCREEN_WIDTH, SCREEN_HEIGHT);
         }
     };
-    enemySmall1Surface = IMG_Load("./media/small1.png");
-    enemySmall2Surface = IMG_Load("./media/small2.png");
-    enemyMedium1Surface = IMG_Load("./media/medium1.png");
-    enemyMedium2Surface = IMG_Load("./media/medium2.png");
-    enemyLarge1Surface = IMG_Load("./media/large1.png");
-    enemyLarge2Surface = IMG_Load("./media/large2.png");
+    enemySmall1Surface = IMG_Load("./media/sprites/small1.png");
+    enemySmall2Surface = IMG_Load("./media/sprites/small2.png");
+    enemyMedium1Surface = IMG_Load("./media/sprites/medium1.png");
+    enemyMedium2Surface = IMG_Load("./media/sprites/medium2.png");
+    enemyLarge1Surface = IMG_Load("./media/sprites/large1.png");
+    enemyLarge2Surface = IMG_Load("./media/sprites/large2.png");
     enemySmall1Texture = SDL_CreateTextureFromSurface(renderer, enemySmall1Surface);
     enemySmall2Texture = SDL_CreateTextureFromSurface(renderer, enemySmall2Surface);
     enemyMedium1Texture = SDL_CreateTextureFromSurface(renderer, enemyMedium1Surface);
@@ -59,15 +59,24 @@ SpaceInvader::SpaceInvader(){
     SDL_FreeSurface(enemyMedium2Surface);
     SDL_FreeSurface(enemyLarge1Surface);
     SDL_FreeSurface(enemyLarge2Surface);
-    deathEnemySurface = IMG_Load("./media/enemyDeath.png");
+    deathEnemySurface = IMG_Load("./media/sprites/enemyDeath.png");
     deathEnemyTexture = SDL_CreateTextureFromSurface(renderer, deathEnemySurface);
     SDL_FreeSurface(deathEnemySurface);
+
+    TTF_Init();
+    font = TTF_OpenFont("./media/fonts/EightBit Atari-Proport6.ttf", 8);
+    textPos.x = 0;
+    textPos.y = 0;
+    textPos.h = 30;
+    textPos.w = 300;
+
     timer = SDL_AddTimer(1000, timerCallback, NULL);
     detectecCollision = false;
     exitProgram = false;
 }
 
 SpaceInvader::~SpaceInvader() {
+    TTF_CloseFont(font);
     SDL_DestroyTexture(playerTexture);
     SDL_DestroyTexture(bulletTexture);
     SDL_DestroyTexture(enemySmall1Texture);
@@ -199,6 +208,7 @@ void SpaceInvader::update() {
                         )
                     ) {
                         enemies[i][k]->setState(destroyed);
+                        score += enemies[i][k]->getScore();
                         player->setState(normal);
                         player->resetBullet();
                         breakLoop = true;
@@ -224,6 +234,13 @@ void SpaceInvader::update() {
 void SpaceInvader::render() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
+    SDL_Color textColor = {255,255,255};
+    std::string scoreText = "SCORE: ";
+    textSurface = TTF_RenderText_Solid(font, scoreText.append(std::to_string(score)).c_str(), textColor);
+    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_FreeSurface(textSurface);
+    SDL_RenderCopy(renderer, textTexture, NULL, &textPos);
+    SDL_DestroyTexture(textTexture);
     SDL_Rect playerPos;
     playerPos.x = player->getX();
     playerPos.y = SCREEN_HEIGHT - player->getH();

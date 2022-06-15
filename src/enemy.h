@@ -25,6 +25,7 @@ class Enemy {
         int getBulletY();
         int getW();
         int getCurrentAnim();
+        int getScore();
         entityState getState();
         void setState(entityState state);
         enemyType getType();
@@ -38,6 +39,7 @@ class Enemy {
         int w;
         int paddingX;
         int paddingY;
+        int initialPaddingY;
         int currentAnim;
         int bulletY;
         int bulletX;

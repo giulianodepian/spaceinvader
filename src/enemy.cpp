@@ -25,8 +25,9 @@ Enemy::Enemy(int initialX, int initialY, enemyType type, int screenW, int screen
     };
     paddingX = 30;
     paddingY = 5;
+    initialPaddingY = 50;
     x = initialX * (27 + paddingX);
-    y = initialY * (HEIGHT + paddingY);
+    y = initialY * (HEIGHT + paddingY) + initialPaddingY;
     currentAnim = 1;
     state = normal;
     bulletX = initialX + w / 2;
@@ -57,6 +58,10 @@ int Enemy::getBulletY() {
 
 int Enemy::getCurrentAnim() {
     return currentAnim;
+}
+
+int Enemy::getScore() {
+    return score;
 }
 
 entityState Enemy::getState() {
