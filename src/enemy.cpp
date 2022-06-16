@@ -32,8 +32,11 @@ Enemy::Enemy(int initialX, int initialY, enemyType type, int screenW, int screen
     originalY = y;
     currentAnim = 1;
     state = normal;
-    bulletX = initialX + w / 2;
-    bulletY = initialY + HEIGHT;
+    bulletX = x + w / 2;
+    bulletY = y + HEIGHT;
+    bulletDY = 2;
+    bulletH = 10;
+    bulletW = 5;
     collided = false;
     playDeathAnimation = true;
 }
@@ -56,6 +59,14 @@ int Enemy::getBulletX() {
 
 int Enemy::getBulletY() {
     return bulletY;
+}
+
+int Enemy::getBulletH() {
+    return bulletH;
+}
+
+int Enemy::getBulletW() {
+    return bulletW;
 }
 
 int Enemy::getCurrentAnim() {
@@ -88,16 +99,31 @@ void Enemy::setPlayDeathAnimation(bool playDeathAnimation) {
 
 void Enemy::horizontalMovement() {
     x += DX * direction;
+    if (state != shooting) bulletX = x + w / 2;
     if (currentAnim == 1) currentAnim = 2;
     else currentAnim = 1;
 }
 
 void Enemy::verticalMovement() {
     y += DY;
+    if (state != shooting) bulletY = y + HEIGHT;
     if (direction == 1) direction = -1;
     else direction = 1;
     if (currentAnim == 1) currentAnim = 2;
     else currentAnim = 1;
+}
+
+void Enemy::bulletMovement() {
+    bulletY += bulletDY;
+    if (bulletY > screenH) {
+        resetBullet();
+        state = normal;
+    }
+}
+
+void Enemy::resetBullet() {
+    bulletY = y + HEIGHT;
+    bulletX = x + w / 2;
 }
 
 bool Enemy::detectCollision() {
@@ -106,6 +132,8 @@ bool Enemy::detectCollision() {
 }
 
 void Enemy::resetPosition() {
+    direction = 1;
     x = originalX;
     y = originalY;
+    resetBullet();
 }

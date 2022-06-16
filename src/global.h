@@ -7,4 +7,6 @@ enum entityState {
     destroyed
 };
 
+static bool checkEnemyShooting;
+
 #endif

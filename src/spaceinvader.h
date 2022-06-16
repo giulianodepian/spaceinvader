@@ -2,6 +2,7 @@
 #define _H_SPACEINVADER
 #include <iostream>
 #include <array>
+#include <cstdlib>
 #include <string> 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -38,6 +39,7 @@ class SpaceInvader {
         SDL_Rect scorePos;
         SDL_Rect livesPos;
         SDL_TimerID timer;
+        SDL_TimerID enemyShootTimer;
         SDL_Surface *playerSurface;
         SDL_Texture *playerTexture;
         SDL_Surface *playerDeathSurface;
@@ -58,6 +60,8 @@ class SpaceInvader {
         SDL_Texture *enemyLarge2Texture;
         SDL_Surface *deathEnemySurface;
         SDL_Texture *deathEnemyTexture;
+        SDL_Surface *enemyLaserSurface;
+        SDL_Texture *enemyLaserTexture;
         SDL_Surface *gameOverTextSurface;
         SDL_Texture *gameOverTextTexture;
         Player *player;
@@ -69,6 +73,7 @@ class SpaceInvader {
         bool zWasPressed;
         bool exitProgram;
         bool detectecCollision;
+        bool checkEnemyShooting;
 };
 
 #endif

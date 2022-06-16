@@ -26,12 +26,16 @@ class Enemy {
         int getW();
         int getCurrentAnim();
         int getScore();
+        int getBulletH();
+        int getBulletW();
         entityState getState();
         void setState(entityState state);
         enemyType getType();
         bool getPlayDeathAnimation();
         void setPlayDeathAnimation(bool playDeathAnimation);
         void resetPosition();
+        void bulletMovement();
+        void resetBullet();
     private:
         enemyType type;
         entityState state;
@@ -46,6 +50,9 @@ class Enemy {
         int currentAnim;
         int bulletY;
         int bulletX;
+        int bulletH;
+        int bulletW;
+        int bulletDY;
         int direction;
         int screenW;
         int screenH;
