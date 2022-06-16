@@ -24,6 +24,7 @@ SpaceInvader::SpaceInvader(){
     leftKeyPressed = false;
     zWasPressed = false;
     score = 0;
+    lives = 3;
     SDL_Init(SDL_INIT_EVERYTHING);
     window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
@@ -68,10 +69,18 @@ SpaceInvader::SpaceInvader(){
 
     TTF_Init();
     font = TTF_OpenFont("./media/fonts/EightBit Atari-Proport6.ttf", 8);
-    textPos.x = 0;
-    textPos.y = 0;
-    textPos.h = 30;
-    textPos.w = 300;
+    scorePos.x = 0;
+    scorePos.y = 0;
+    scorePos.h = 30;
+    scorePos.w = 300;
+    livesPos.x = SCREEN_WIDTH - 200;
+    livesPos.y = 0;
+    livesPos.w = 200;
+    livesPos.h = 30;
+    SDL_Color textColor = {255,255,255};
+    gameOverTextSurface = TTF_RenderText_Solid(font, "GAME OVER", textColor);
+    gameOverTextTexture = SDL_CreateTextureFromSurface(renderer, gameOverTextSurface);
+    SDL_FreeSurface(gameOverTextSurface);
 
     timer = SDL_AddTimer(1000, timerCallback, NULL);
     detectecCollision = false;
@@ -157,34 +166,36 @@ void SpaceInvader::input() {
         case SDL_USEREVENT:
             switch(event.user.code) {
                 case 2:
-                    for (int i = 0; i < 11; i++) {
-                        if (enemies[i][0]->detectCollision()) {
-                            detectecCollision = true;
-                            for (int j = 0; j < 11; j++) {
-                                for (int l = 0; l < 5; l++) {
-                                    if (enemies[j][l]->getState() != destroyed) {
-                                        enemies[j][l]->verticalMovement();
+                    if (state != ending) {
+                        for (int i = 0; i < 11; i++) {
+                            if (enemies[i][0]->detectCollision()) {
+                                detectecCollision = true;
+                                for (int j = 0; j < 11; j++) {
+                                    for (int l = 0; l < 5; l++) {
+                                        if (enemies[j][l]->getState() != destroyed) {
+                                            enemies[j][l]->verticalMovement();
+                                        }
+                                    }
+                                }
+                                break;
+                            } else {
+                                detectecCollision = false;
+                            }
+                        }
+                        if (!detectecCollision) {
+                            for (int i = 0; i < 11; i++) {
+                                for (int k = 0; k < 5; k++) {
+                                    if (enemies[i][k]->getState() != destroyed) {
+                                        enemies[i][k]->horizontalMovement();
                                     }
                                 }
                             }
-                            break;
-                        } else {
-                            detectecCollision = false;
                         }
+                        break;
                     }
-                    if (!detectecCollision) {
-                        for (int i = 0; i < 11; i++) {
-                            for (int k = 0; k < 5; k++) {
-                                if (enemies[i][k]->getState() != destroyed) {
-                                    enemies[i][k]->horizontalMovement();
-                                }
-                            }
-                        }
-                    }
-                    break;
                 default:
                     break;
-            }
+                }
         default:
             break;
         }
@@ -228,7 +239,7 @@ void SpaceInvader::update() {
         player->bulletMovement();
     }
 
-    if(zWasPressed) {
+    if(zWasPressed && player->getState() != destroyed) {
         player->setState(shooting);
         zWasPressed = false;
     }
@@ -237,20 +248,32 @@ void SpaceInvader::update() {
         for (int i = 0; i < 11; i++) {
             for (int k = 0; k < 5; k++) {
                 enemies[i][k]->resetPosition();
+                if (lives == 0) enemies[i][k]->setState(normal);
             }
         }
-        player->setState(normal);
-        state = playing;
-        SDL_Delay(2000);
+        if (lives > 0) {
+            player->setState(normal);
+            state = playing;
+            SDL_Delay(2000);
+        } else {
+            player->setState(normal);
+            state = playing;
+            lives = 3;
+            score = 0;
+            SDL_Delay(2000);
+        }
     }
-
-    for (int i = 0; i < 11; i++) {
-        for (int k = 0; k < 5; k++) {
-            if ((SCREEN_HEIGHT - player->getH()) <= (enemies[i][k]->getY() + Enemy::HEIGHT)) {
-                player->setState(destroyed);
-                state = ending;
-                break;
+    if (player->getState() != destroyed){
+        for (int i = 0; i < 11; i++) {
+            for (int k = 0; k < 5; k++) {
+                if ((SCREEN_HEIGHT - player->getH()) <= (enemies[i][k]->getY() + Enemy::HEIGHT)) {
+                    lives--;
+                    player->setState(destroyed);
+                    state = ending;
+                    break;
+                }
             }
+            if (player->getState() == destroyed) break;
         }
     }
 
@@ -261,11 +284,16 @@ void SpaceInvader::render() {
     SDL_RenderClear(renderer);
     SDL_Color textColor = {255,255,255};
     std::string scoreText = "SCORE: ";
-    textSurface = TTF_RenderText_Solid(font, scoreText.append(std::to_string(score)).c_str(), textColor);
-    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font, scoreText.append(std::to_string(score)).c_str(), textColor);
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     SDL_FreeSurface(textSurface);
-    SDL_RenderCopy(renderer, textTexture, NULL, &textPos);
+    SDL_RenderCopy(renderer, textTexture, NULL, &scorePos);
     SDL_DestroyTexture(textTexture);
+    std::string livesText = "LIVES: ";
+    SDL_Surface *livesTextSurface = TTF_RenderText_Solid(font, livesText.append(std::to_string(lives)).c_str(), textColor);
+    SDL_Texture *livesTextTexture = SDL_CreateTextureFromSurface(renderer, livesTextSurface);
+    SDL_FreeSurface(livesTextSurface);
+    SDL_RenderCopy(renderer, livesTextTexture, NULL, &livesPos);
     SDL_Rect playerPos;
     playerPos.x = player->getX();
     playerPos.y = SCREEN_HEIGHT - player->getH();
@@ -315,5 +343,13 @@ void SpaceInvader::render() {
     }
     if (player->getState() != destroyed) SDL_RenderCopy(renderer, playerTexture, NULL, &playerPos);
     else SDL_RenderCopy(renderer, PlayerDeathTexture, NULL, &playerPos);
+    if (lives == 0) {
+        SDL_Rect gameOverPos;
+        gameOverPos.x = SCREEN_WIDTH / 2 - (200 / 2);
+        gameOverPos.y = SCREEN_HEIGHT / 2;
+        gameOverPos.h = 30;
+        gameOverPos.w = 200;
+        SDL_RenderCopy(renderer, gameOverTextTexture, NULL, &gameOverPos);
+    }
     SDL_RenderPresent(renderer);
 }

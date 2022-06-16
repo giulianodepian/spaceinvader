@@ -16,6 +16,7 @@ class Enemy;
 enum gameState {
     playing,
     ending,
+    gameover,
 };
 
 class SpaceInvader {
@@ -34,7 +35,8 @@ class SpaceInvader {
         SDL_Renderer *renderer;
         SDL_Event event;
         TTF_Font *font;
-        SDL_Rect textPos;
+        SDL_Rect scorePos;
+        SDL_Rect livesPos;
         SDL_TimerID timer;
         SDL_Surface *playerSurface;
         SDL_Texture *playerTexture;
@@ -56,11 +58,12 @@ class SpaceInvader {
         SDL_Texture *enemyLarge2Texture;
         SDL_Surface *deathEnemySurface;
         SDL_Texture *deathEnemyTexture;
-        SDL_Surface *textSurface;
-        SDL_Texture *textTexture;
+        SDL_Surface *gameOverTextSurface;
+        SDL_Texture *gameOverTextTexture;
         Player *player;
         std::array<std::array<Enemy*, 5>, 11> enemies;
         int score;
+        int lives;
         bool leftKeyPressed;
         bool rightKeyPressed;
         bool zWasPressed;
