@@ -20,10 +20,11 @@ Uint32 enemyDeathCallback(Uint32 interval, void *param) {
 }
 
 SpaceInvader::SpaceInvader(){
-    checkEnemyShooting = true;
+    state = start;
     rightKeyPressed = false;
     leftKeyPressed = false;
     zWasPressed = false;
+    returnKeyPressed = false;
     score = 0;
     lives = 3;
     killCount = 0;
@@ -86,6 +87,9 @@ SpaceInvader::SpaceInvader(){
     gameOverTextSurface = TTF_RenderText_Solid(font, "GAME OVER", textColor);
     gameOverTextTexture = SDL_CreateTextureFromSurface(renderer, gameOverTextSurface);
     SDL_FreeSurface(gameOverTextSurface);
+    startTextSurface = TTF_RenderText_Solid(font, "PRESS START TO PLAY", textColor);
+    startTextTexture = SDL_CreateTextureFromSurface(renderer, startTextSurface);
+    SDL_FreeSurface(startTextSurface);
     timer = SDL_AddTimer(1000, timerCallback, NULL);
     detectecCollision = false;
     exitProgram = false;
@@ -128,17 +132,21 @@ void SpaceInvader::input() {
                     break;
                 
                 case SDL_SCANCODE_LEFT:
-                    leftKeyPressed = true;
+                    if (player->getState() == normal && state != start) leftKeyPressed = true;
                     break;
                 
                 case SDL_SCANCODE_RIGHT:
-                    rightKeyPressed = true;
+                    if (player->getState() == normal && state != start)rightKeyPressed = true;
                     break;
 
                 case SDL_SCANCODE_Z:
-                    if (player->getState() == normal) {
+                    if (player->getState() == normal && state != start) {
                         zWasPressed = true;
                     }
+                    break;
+                
+                case SDL_SCANCODE_RETURN:
+                    if (state == start) returnKeyPressed = true;
                     break;
                 
                 default:
@@ -171,7 +179,7 @@ void SpaceInvader::input() {
         case SDL_USEREVENT:
             switch(event.user.code) {
                 case 2:
-                    if (state != ending) {
+                    if (state != ending && state != start) {
                         for (int i = 0; i < 11; i++) {
                             if (enemies[i][0]->detectCollision()) {
                                 detectecCollision = true;
@@ -208,10 +216,10 @@ void SpaceInvader::input() {
 }
 
 void SpaceInvader::update() {
-    if (leftKeyPressed && player->getState() != destroyed) {
+    if (leftKeyPressed && player->getState() != destroyed && state != start) {
         player->movement(-1);
     }
-    if(rightKeyPressed && player->getState() != destroyed) {
+    if(rightKeyPressed && player->getState() != destroyed && state != start) {
         player->movement(1);
     }
 
@@ -245,9 +253,14 @@ void SpaceInvader::update() {
         player->bulletMovement();
     }
 
-    if(zWasPressed && player->getState() != destroyed) {
+    if(zWasPressed && player->getState() != destroyed && state != start) {
         player->setState(shooting);
         zWasPressed = false;
+    }
+
+    if (returnKeyPressed && state == start) {
+        state = playing;
+        returnKeyPressed = false;
     }
 
     if (killCount == 55 && state == ending) {
@@ -282,7 +295,7 @@ void SpaceInvader::update() {
             SDL_Delay(1500);
         } else {
             player->setState(normal);
-            state = playing;
+            state = start;
             lives = 3;
             score = 0;
             SDL_Delay(1500);
@@ -302,45 +315,47 @@ void SpaceInvader::update() {
             if (player->getState() == destroyed) break;
         }
     }
-    for (int i = 0; i < 11; i++) {
-        for (int j = 4; j >= 0; j--) {
-            bool loopBreak = false;
-            if (enemies[i][j]->getState() == shooting) {
-                enemies[i][j]->bulletMovement();
-                loopBreak = true;
-            }
-
-            if (player->getState() != destroyed && !loopBreak) {
-                if (enemies[i][j]->getState() == normal) {
-                    loopBreak = true;
-                    if ((rand() % 400 + 1) == 1) {
-                        enemies[i][j]->setState(shooting);
-                    }
-                }
-            }
-            if (player->getState() != destroyed) {
+    if  (state != start) {
+        for (int i = 0; i < 11; i++) {
+            for (int j = 4; j >= 0; j--) {
+                bool loopBreak = false;
                 if (enemies[i][j]->getState() == shooting) {
-                    if (
-                        (
-                            (enemies[i][j]->getBulletX() >= player->getX() && enemies[i][j]->getBulletX() <= player->getX() + player->getW()) ||
-                            (enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() >= player->getX() && enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() <= player->getX() + player->getW())
-                        ) 
-                        &&
-                        (
-                            (enemies[i][j]->getBulletY() >= SCREEN_HEIGHT - player->getH() && enemies[i][j]->getBulletY() <= SCREEN_HEIGHT) ||
-                            (enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() >= SCREEN_HEIGHT - player->getH() && enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() <= SCREEN_HEIGHT)
-                        )
-                    ) {
-                        lives--;
-                        player->setState(destroyed);
-                        player->resetBullet();
-                        state = ending;
+                    enemies[i][j]->bulletMovement();
+                    loopBreak = true;
+                }
+
+                if (player->getState() != destroyed && !loopBreak) {
+                    if (enemies[i][j]->getState() == normal) {
+                        loopBreak = true;
+                        if ((rand() % 400 + 1) == 1) {
+                            enemies[i][j]->setState(shooting);
+                        }
                     }
                 }
+                if (player->getState() != destroyed) {
+                    if (enemies[i][j]->getState() == shooting) {
+                        if (
+                            (
+                                (enemies[i][j]->getBulletX() >= player->getX() && enemies[i][j]->getBulletX() <= player->getX() + player->getW()) ||
+                                (enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() >= player->getX() && enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() <= player->getX() + player->getW())
+                            ) 
+                            &&
+                            (
+                                (enemies[i][j]->getBulletY() >= SCREEN_HEIGHT - player->getH() && enemies[i][j]->getBulletY() <= SCREEN_HEIGHT) ||
+                                (enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() >= SCREEN_HEIGHT - player->getH() && enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() <= SCREEN_HEIGHT)
+                            )
+                        ) {
+                            lives--;
+                            player->setState(destroyed);
+                            player->resetBullet();
+                            state = ending;
+                        }
+                    }
+                }
+                if (loopBreak) break;
             }
-            if (loopBreak) break;
+            if (player->getState() == destroyed) break;
         }
-        if (player->getState() == destroyed) break;
     }
 }
 
@@ -423,6 +438,14 @@ void SpaceInvader::render() {
         gameOverPos.h = 30;
         gameOverPos.w = 200;
         SDL_RenderCopy(renderer, gameOverTextTexture, NULL, &gameOverPos);
+    }
+    if (state == start) {
+        SDL_Rect startPos;
+        startPos.x = SCREEN_WIDTH / 2 - (200 / 2);
+        startPos.y = SCREEN_HEIGHT / 2;
+        startPos.h = 30;
+        startPos.w = 200;
+        SDL_RenderCopy(renderer, startTextTexture, NULL, &startPos);
     }
     SDL_RenderPresent(renderer);
 }

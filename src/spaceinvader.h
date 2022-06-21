@@ -15,6 +15,7 @@ class Player;
 class Enemy;
 
 enum gameState {
+    start,
     playing,
     ending,
     gameover,
@@ -63,6 +64,8 @@ class SpaceInvader {
         SDL_Texture *enemyLaserTexture;
         SDL_Surface *gameOverTextSurface;
         SDL_Texture *gameOverTextTexture;
+        SDL_Surface *startTextSurface;
+        SDL_Texture *startTextTexture;
         Player *player;
         std::array<std::array<Enemy*, 5>, 11> enemies;
         int score;
@@ -73,7 +76,7 @@ class SpaceInvader {
         bool zWasPressed;
         bool exitProgram;
         bool detectecCollision;
-        bool checkEnemyShooting;
+        bool returnKeyPressed;
 };
 
 #endif
