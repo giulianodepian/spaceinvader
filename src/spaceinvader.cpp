@@ -132,11 +132,11 @@ void SpaceInvader::input() {
                     break;
                 
                 case SDL_SCANCODE_LEFT:
-                    if (player->getState() == normal && state != start) leftKeyPressed = true;
+                    if (player->getState() != destroyed && state != start) leftKeyPressed = true;
                     break;
                 
                 case SDL_SCANCODE_RIGHT:
-                    if (player->getState() == normal && state != start)rightKeyPressed = true;
+                    if (player->getState() != destroyed && state != start)rightKeyPressed = true;
                     break;
 
                 case SDL_SCANCODE_Z:
