@@ -39,7 +39,6 @@ class SpaceInvader {
         SDL_Rect scorePos;
         SDL_Rect livesPos;
         SDL_TimerID timer;
-        SDL_TimerID enemyShootTimer;
         SDL_Surface *playerSurface;
         SDL_Texture *playerTexture;
         SDL_Surface *playerDeathSurface;
@@ -68,6 +67,7 @@ class SpaceInvader {
         std::array<std::array<Enemy*, 5>, 11> enemies;
         int score;
         int lives;
+        int killCount;
         bool leftKeyPressed;
         bool rightKeyPressed;
         bool zWasPressed;

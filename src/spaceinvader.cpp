@@ -19,11 +19,6 @@ Uint32 enemyDeathCallback(Uint32 interval, void *param) {
     return 0;
 }
 
-Uint32 enemyCanShoot(Uint32 interval, void *param) {
-    checkEnemyShooting = true;
-    return interval;
-}
-
 SpaceInvader::SpaceInvader(){
     checkEnemyShooting = true;
     rightKeyPressed = false;
@@ -31,6 +26,7 @@ SpaceInvader::SpaceInvader(){
     zWasPressed = false;
     score = 0;
     lives = 3;
+    killCount = 0;
     SDL_Init(SDL_INIT_EVERYTHING);
     window = SDL_CreateWindow("Space Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
@@ -90,9 +86,7 @@ SpaceInvader::SpaceInvader(){
     gameOverTextSurface = TTF_RenderText_Solid(font, "GAME OVER", textColor);
     gameOverTextTexture = SDL_CreateTextureFromSurface(renderer, gameOverTextSurface);
     SDL_FreeSurface(gameOverTextSurface);
-
     timer = SDL_AddTimer(1000, timerCallback, NULL);
-    enemyShootTimer = SDL_AddTimer(500, enemyCanShoot, NULL);
     detectecCollision = false;
     exitProgram = false;
 }
@@ -234,6 +228,7 @@ void SpaceInvader::update() {
                     ) {
                         enemies[i][k]->setState(destroyed);
                         score += enemies[i][k]->getScore();
+                        killCount++;
                         player->setState(normal);
                         player->resetBullet();
                         breakLoop = true;
@@ -255,12 +250,30 @@ void SpaceInvader::update() {
         zWasPressed = false;
     }
 
+    if (killCount == 55 && state == ending) {
+        for (int i = 0; i < 11; i++) {
+            for (int k = 0; k < 5; k++) {
+                enemies[i][k]->resetPosition();
+                enemies[i][k]->setState(normal);
+                enemies[i][k]->setPlayDeathAnimation(true);
+            }
+        }
+        state = playing;
+        killCount = 0;
+        SDL_Delay(2000);
+    }
+
+    if (killCount == 55) state = ending;
+
     if (player->getState() == destroyed) {
         for (int i = 0; i < 11; i++) {
             for (int k = 0; k < 5; k++) {
                 enemies[i][k]->resetPosition();
                 if (enemies[i][k]->getState() == shooting) enemies[i][k]->setState(normal);
-                if (lives == 0) enemies[i][k]->setState(normal);
+                if (lives == 0) { 
+                    enemies[i][k]->setState(normal);
+                    enemies[i][k]->setPlayDeathAnimation(true);
+                }
             }
         }
         if (lives > 0) {
@@ -297,10 +310,10 @@ void SpaceInvader::update() {
                 loopBreak = true;
             }
 
-            if (checkEnemyShooting && player->getState() != destroyed && !loopBreak) {
+            if (player->getState() != destroyed && !loopBreak) {
                 if (enemies[i][j]->getState() == normal) {
                     loopBreak = true;
-                    if ((rand() % 100 + 1) == 1) {
+                    if ((rand() % 400 + 1) == 1) {
                         enemies[i][j]->setState(shooting);
                     }
                 }
