@@ -46,20 +46,6 @@ void CollisionObserver::update(Player *player, std::array<std::array<Enemy *, 5>
         }
         for (int i = 0; i < 11; i++) {
             for (int j = 4; j >= 0; j--) {
-                bool loopBreak = false;
-                if (enemies[i][j]->getState() == shooting) {
-                    enemies[i][j]->bulletMovement();
-                    loopBreak = true;
-                }
-
-                if (player->getState() != destroyed && !loopBreak) {
-                    if (enemies[i][j]->getState() == normal) {
-                        loopBreak = true;
-                        if ((rand() % 400 + 1) == 1) {
-                            enemies[i][j]->setState(shooting);
-                        }
-                    }
-                }
                 if (player->getState() != destroyed) {
                     if (enemies[i][j]->getState() == shooting) {
                         if (
@@ -77,7 +63,6 @@ void CollisionObserver::update(Player *player, std::array<std::array<Enemy *, 5>
                         }
                     }
                 }
-                if (loopBreak) break;
             }
             if (player->getState() == destroyed) break;
         }
