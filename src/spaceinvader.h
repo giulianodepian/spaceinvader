@@ -9,10 +9,12 @@
 #include <SDL2/SDL_ttf.h>
 #include "player.h"
 #include "enemy.h"
+#include "collisionObserver.h"
 #include "global.h"
 
 class Player;
 class Enemy;
+class CollisionObserver;
 
 enum gameState {
     start,
@@ -68,9 +70,7 @@ class SpaceInvader {
         SDL_Texture *startTextTexture;
         Player *player;
         std::array<std::array<Enemy*, 5>, 11> enemies;
-        int score;
-        int lives;
-        int killCount;
+        CollisionObserver *collisionObserver;
         bool leftKeyPressed;
         bool rightKeyPressed;
         bool zWasPressed;

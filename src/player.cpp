@@ -12,6 +12,9 @@ Player::Player(int screenW, int screenH){
     bulletY = screenH - h - bulletH;
     bulletDy = 5;
     dx = 5;
+    score = 0;
+    killCount = 0;
+    lives = 3;
     state = normal;
 }
 
@@ -75,4 +78,45 @@ int Player::getBulletH() {
 
 int Player::getBulletW() {
     return bulletW;
+}
+
+int Player::getScreenH() {
+    return screenH;
+}
+
+int Player::getLives() {
+    return lives;
+}
+
+void Player::setLives(int lives) {
+    Player::lives = lives;
+}
+
+int Player::getScore() {
+    return score;
+}
+
+void Player::setScore(int score) {
+    Player::score = score;
+}
+
+int Player::getKillCount() {
+    return killCount;
+}
+
+void Player::setKillCount(int killCount) {
+    Player::killCount = killCount;
+}
+
+void Player::playerDestroyEnemy(int score) {
+    Player::score += score;
+    killCount++;
+    state = normal;
+    resetBullet();
+}
+
+void Player::enemyDestroyPlayer() {
+    lives--;
+    state = destroyed;
+    resetBullet();
 }

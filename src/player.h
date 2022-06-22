@@ -14,9 +14,18 @@ class Player {
         int getBulletY();
         int getBulletH();
         int getBulletW();
+        int getScreenH();
+        int getLives();
+        int getScore();
+        int getKillCount();
+        void setLives(int lives);
+        void setScore(int score);
+        void setKillCount(int killCount);
         entityState getState();
         void setState(entityState state);
         void resetBullet();
+        void playerDestroyEnemy(int score);
+        void enemyDestroyPlayer();
     private:
         int x;
         int dx;
@@ -30,6 +39,9 @@ class Player {
         entityState state;
         int screenW;
         int screenH;
+        int lives;
+        int score;
+        int killCount;
 };
 
 #endif
