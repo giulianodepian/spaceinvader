@@ -50,8 +50,7 @@ void CollisionObserver::update(Player *player, std::array<std::array<Enemy *, 5>
                     if (enemies[i][j]->getState() == shooting) {
                         if (
                             (
-                                (enemies[i][j]->getBulletX() >= player->getX() && enemies[i][j]->getBulletX() <= player->getX() + player->getW()) ||
-                                (enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() >= player->getX() && enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() <= player->getX() + player->getW())
+                                enemies[i][j]->getBulletX() <= player->getX() + player->getW() && enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() >= player->getX() 
                             ) 
                             &&
                             (
