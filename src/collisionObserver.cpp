@@ -17,8 +17,8 @@ void CollisionObserver::update(Player *player, std::array<std::array<Enemy *, 5>
                     {
                         if (
                             player->getBulletY() <= enemies[i][k]->getY() + Enemy::HEIGHT && (
-                                (player->getBulletX() >= enemies[i][k]->getX() && player->getBulletX() <= enemies[i][k]->getX() + enemies[i][k]->getW()) ||
-                                (player->getBulletX() + player->getBulletW() >= enemies[i][k]->getX() && player->getBulletX() + player->getBulletW() <= enemies[i][k]->getX() + enemies[i][k]->getW())
+                                player->getBulletX() <= enemies[i][k]->getX() + enemies[i][k]->getW() 
+                                && player->getBulletX() + player->getBulletW() >= enemies[i][k]->getX()
                             )
                         ) {
                             player->playerDestroyEnemy(enemies[i][k]->getScore());
@@ -50,11 +50,13 @@ void CollisionObserver::update(Player *player, std::array<std::array<Enemy *, 5>
                     if (enemies[i][j]->getState() == shooting) {
                         if (
                             (
-                                enemies[i][j]->getBulletX() <= player->getX() + player->getW() && enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() >= player->getX() 
+                                enemies[i][j]->getBulletX() <= player->getX() + player->getW() 
+                                && enemies[i][j]->getBulletX() + enemies[i][j]->getBulletW() >= player->getX() 
                             ) 
                             &&
                             (
-                                enemies[i][j]->getBulletY() <= player->getScreenH() && enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() >= player->getScreenH() - player->getH()
+                                enemies[i][j]->getBulletY() <= player->getScreenH() 
+                                && enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() >= player->getScreenH() - player->getH()
                             )
                         ) {
                             player->enemyDestroyPlayer();
