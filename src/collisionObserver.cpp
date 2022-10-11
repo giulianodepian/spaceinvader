@@ -54,8 +54,7 @@ void CollisionObserver::update(Player *player, std::array<std::array<Enemy *, 5>
                             ) 
                             &&
                             (
-                                (enemies[i][j]->getBulletY() >= player->getScreenH() - player->getH() && enemies[i][j]->getBulletY() <= player->getScreenH()) ||
-                                (enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() >= player->getScreenH() - player->getH() && enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() <= player->getScreenH())
+                                enemies[i][j]->getBulletY() <= player->getScreenH() && enemies[i][j]->getBulletY() + enemies[i][j]->getBulletH() >= player->getScreenH() - player->getH()
                             )
                         ) {
                             player->enemyDestroyPlayer();
